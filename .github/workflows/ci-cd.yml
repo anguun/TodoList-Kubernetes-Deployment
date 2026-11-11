@@ -23,13 +23,7 @@ jobs:
         run: docker build -t $IMAGE_NAME:${{ github.sha }} .
 
       - name: Security scan with Trivy
-        uses: aquasecurity/trivy-action@0.28.0
-        with:
-          image-ref: ${{ env.IMAGE_NAME }}:${{ github.sha }}
-          format: table
-          severity: CRITICAL
-          ignore-unfixed: true
-          exit-code: '1'
+        run: docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:0.57.1 image --severity CRITICAL --ignore-unfixed --exit-code 1 $IMAGE_NAME:${{ github.sha }}
 
       - name: Save image
         run: docker save $IMAGE_NAME:${{ github.sha }} | gzip > image.tar.gz
